@@ -1,0 +1,43 @@
+데이터베이스 스키마 자동 생성하기
+운영 시스템에서는 절대 사용하면 안됨
+
+create : 기존테이블 삭제 후 다시 생성(drop + create)(운영 db에서 사용하면 안됨)
+create-drop : create와 같으나 종료 시점에서 테이블 drop(운영 db에서 사용하면 안됨)
+update : 변경부분만 반영(운영 db에서 사용하면 안됨)
+validate : 엔티티와 테이블이 정상 매핑되었는지 확인
+none : 사용하지 않음
+
+개발초기 - create, update
+테스트 서버 - update,validate
+스테이징과 운영 서버는 validate, none
+
+요즘은 개발 서버에서도 사용하지 않는 추세
+
+매핑 어노테이션
+@Column(name = "...") 컬림 이름 다를 때
+@Temporal(TemporalType.TIMESTAMP) 시간 관련
+@Enumerated(EnumType.STRING)
+@Lob : 컨텐츠 길이가 너무 길 때
+CLOB(캐릭터 타입), BLOB(바이너리 타입)
+@Transient(테이블에 매핑되지 않는 필드)
+
+Enum을 사용할 때에는 주의! : String으로!(현업에서)
+이유: enum수정시 order같은 경우는 변화가 일어나서 망가짐
+
+@Column
+name: 매핑항 테이블 컬럼 이름
+insertable(디비에 안들어감), updateable : 읽기 전용
+nullable : null 혀용여부 결정, DDL 생성시 사용
+unique : 유니크한 제약 조건, DDL 생성시 사용
+columnDefinition, length, precision, scale(DDL)
+length : 길이 조건
+
+
+식별자 매핑 방법
+@id
+identity :db위임
+sequence
+table
+auto
+
+

@@ -1,6 +1,7 @@
 package hellojpa;
 
 import entity.Member;
+import entity.MemberType;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -18,8 +19,9 @@ public class Main {
 
         try {
             Member member = new Member();
-            member.setId(100L);
+//            member.setId(100L);
             member.setName("안녕하세요");
+            member.setMemberType(MemberType.ADMIN);
 
 
             em.persist(member);
