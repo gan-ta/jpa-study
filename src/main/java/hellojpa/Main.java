@@ -14,8 +14,6 @@ public class Main {
     public static void main(String[] args){
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
 
-
-
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
@@ -30,7 +28,7 @@ public class Main {
 
             //멤버 저장
             Member member = new Member();
-            member.setName("member1");
+            member.setName("hello");
             em.persist(member);
             //null이 들어가는 경우
             team.getMembers().add(member);
