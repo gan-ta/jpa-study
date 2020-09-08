@@ -11,6 +11,9 @@
             <property name = "javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/test"/>
             <property name = "hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
 
+<!--            <property name = "hibernate.dialect" value="org.hibernate.dialect.Oracle12cDialect"/>-->
+
+
 
             <!--옵션-->
             <property name = "hibernate.show_sql" value="true"/>
@@ -18,7 +21,8 @@
             <property name="hibernate.use_sql_comments" value="true"/>
             <property name="hibernate.id.new_generator_mappings" value="true"/>
 
-<!--            <property name="hibernate.hbmddl.auto" value="create"/>-->
+
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
         </properties>
 
 

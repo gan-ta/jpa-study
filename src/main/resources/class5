@@ -1,0 +1,143 @@
+JPA 내부 구조
+영속성 컨텍스트
+프록시와 즉시로딩, 지연로딩
+
+영속성 컨텍스트
+JPA에서 가장 중요한 2가지
+1, 객체와 관계형 데이터베이스 매핑하기
+2, 영속성 컨텍스트
+
+엔티티 매니저 팩토리와 엔티티 매니저
+영속성 컨텍스트
+"엔티티를 영구 저장하는 환경"
+EntityManager.persist(entity);-> entity가 디비에 저장
+
+영속성 컨텍스트는 논리적인 개념
+눈에 보이지 않는다
+엔티티 매니저를 통해서 영속성 컨텍스트에 접근
+
+엔티티 매니저와 영속성 컨텍스트
+엔티티 매니저 안에 영속성 컨텍스트가 있다(캐시같은 놈이구나!)
+<1:1 , N:1>
+
+엔티티의 생명주기
+1,비영속(영속성 컨텍스트와 전혀 관계가 없는 상태)<new/transient>
+2,영속(영속성 컨텍스트에 저장된 상태)<managed>
+3,준영속(영속성 컨텍스트에 저장되었다가 분리된 상태)<detached>
+4,삭제(삭제된 상태)<removed>
+
+1, 비영속
+객체를 생성한 상태
+
+2, 영속
+객체를 생성한 후 매니저에 집어넣어줌
+(관리가 되기 시작함)
+
+EntityManager em = emf.createEntityanager();
+em.getTransaction().begin();
+
+//객체를 저장한 상태(영속)
+em.persist(member)
+
+3, 준영속
+회원 엔티티를 영속성 컨텍스트에서 분리, 준영속 상태
+em.detach(member);
+
+4, 삭제
+객체를 삭제한 상태(삭제)
+em.remove(member)
+
+영속성 컨텍스트의 장점!
+1, 1차 캐시
+2, 동일성(identity) 보장
+3, 트렌젝션을 지원하는 쓰기 지연(transactional write-behind)
+4, 변경 감지(Dirty Checking)
+5, 지연 로딩(Lazy Loading)
+
+===============================================
+
+1, 1차 캐시
+영속 컨텍스트에 1차 캐시가 있음
+entity넣게 되면 영속성 컨텍스트 안에 키는 id로 되고 Entity객체가 value가 됨
+(equals하면 객체가 같다고 하는 이유가 여기에)
+먼저 1차 캐시를 뒤진 다음(id를 기준으로) 디비로 감-> 디비에서 꺼내 오게 되면 캐시에 저장을 하고 반환
+1차캐시라는 것은 global이 아니라 쓰레드 시작과 종료 때 잠깐 생성이 되고 끝남
+
+2,영속 엔티티의 동일성 보장
+Member a = em.find(Member.class, "member1");
+Member b = em.find(Member.class, "member1");
+
+System.out.println(a == b);
+
+1차 캐시로 반복 가능한 읽기(REPEATABLE READ) 등급의 트랜젝션 격리 수준을 데이터베이스가 아닌
+애플리케이션 차원에서 제공
+
+트랜잭션을 지원하는 쓰기 지연
+
+3, 트렌젝션을 지원하는 쓰기 지연
+
+EntityManager em = emf.createEntityanager();
+EntityTransaction transaction = em.getTransaction();
+
+transaction.begin();//트렌젝션 시작
+
+em.persist(memberA);
+em.persist(memberB);
+//SQL문 보내지 않음
+
+transaction.commit();//SQL문 보냄
+
+persist하게 되면
+1차 캐시에 저장을 하고 쓰기 지연 SQL 저장소로 쿼리문이 저장되어 있음
+디비에는 commit시점에서 동시에 보내줌
+flush는 저장소에 있는 쿼리를 디비에 보냄(커밋이 아님), 캐시를 바꾸는게 아님,db랑 싱크 맞추려고
+쿼리를 보낸 다음 commit을 보내게 됨
+transaction.commit() -> flush + db commit
+
+4, 변경 감지
+트렌젝션 수행 시에 사실 스냅샷이라고 추가적으로 있음
+값이 바뀌면 뭐가 바뀌었는지 감지
+update 따로 안해줘도 알아서 변경해줌
+
+엔티티 삭제
+em.remove(entity)
+
+플러시 발생
+1, 변경감지
+2, 수정된 엔티티 쓰기 지연 SQL 저장소에 등록
+3, 쓰기 지연 SQL저장소의 쿼리를 데이터베이스에 전송(등록, 수정, 삭제 쿼리)
+
+영속성 컨텍스트를 플러시하는 방법
+em.flush() - 직접 호출
+트렌젝션 커밋- 플러시 자동 호출
+JPQL 쿼리 실행 - 플러시 자동 호출
+
+플러시
+1, 영속성 컨텍스트 비우지 않음
+2, 영속성 컨텍스트의 변경내용을 데이터베이스에 동기화
+3, 트렌젝션이라는 작업 단위가 중요 -> 커밋 직전에만 동기화하면 됨
+
+
+준영속 상태로 만드는 방법
+em.detach(entity)
+특정 엔티티만 준영속 상태로 전환
+
+em.clear()
+영속성 컨텍스트를 완전히 초기화
+
+em.close()
+영속성 컨텍스트를 종료
+
+5, 지연로딩 => Member정보만 필요하고 Team은 필요 없을 때
+fetch = FetchType.LAZY
+member안의 team 객체는 프록시객체를 만듬(가짜 객체)
+=> 실제 사용시에 초기화를 시켜줌(DB조회)
+
+프록시 객체 -> 영속성이 살아 있어야 함
+
+즉시로딩
+fetch = FetchType.EAGER
+함께 조회하고 싶을 때
+실제 현업에서는 LAZY쓰고 나중에 조작
+N+1 문제를 일으킨가(연쇄작용) => 운용하기 어려움
+
