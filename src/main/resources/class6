@@ -1,0 +1,76 @@
+JPA와 객체지향 쿼리
+
+JPA는 다양한 쿼리 방법을 지원
+JPQL
+JPA Criteria
+QueryDSL
+네이티브 SQL
+JSBC API직접 사용
+
+JPQL
+가장 단순한 조회 방법
+EntityManager.find()
+객체 그래프 탐색
+
+검색을 할 때도 엔티티 객체를 대상으로 검색
+
+모든 DB데이터를 객체로 변환해서 검색하는 것은 불가능
+애플리케이션에서 쿼리문은 필요
+
+JPA는 SQL을 추상화 한 JPQL을 제공
+객체지향 쿼리
+SQL을 추상화해서 특정 데이터베이스 SQL에 의존하지 않음
+
+차이점
+1, from 절 안에 객체다.
+2, 대소문자 구분을 하지 않는다.
+3, 엔티티 이름을 사용, 별칭은 필수
+
+프로젝션
+SELECT m FROM Member m -> 엔티티 프로젝션
+SELECT m.team FROM Member m - > 엔티티 프로젝션
+SELECT username , age FROM  Member m -> 단순 값 프로젝션
+
+new 명령어 : 단순 값을 DTO로 바로 조회
+SELECT new jpabook.jpql.UserDTO(m.username, m.age) FROM Member m
+
+DISTINCT는 중복 제거
+
+페이징 API
+JPA는 페이징을 다음 두 API로 추상화
+setFirtsResult(int startPosition) : 조회 시작 위치
+(0부터 시작)
+setMaxResults(int maxResult) : 조회할 데이터 수
+
+조인
+SELECT m FROM Member m [INNER] JOIN m.team t
+
+SELECT m FROM Member m LEFT [OUTER] JOIN m.team t
+
+select count(m) from Member m Team t where m.username = t.name
+
+하이버네이트 5.1부터 세타조인도 외부 조인 가능
+
+페치 조인(**많이 쓰임**)
+LAZY쓴 다음 쓸 일이 많음
+
+엔티티 객체 그래프를 한번에 조회하는 방법
+별칭을 사용할 수 없다.
+
+JPQL : select m from Member m join fetch m.team(LAZY로 짠 다음)
+
+SQL : SELECT M.*,T.* FROM MEMBER T INNER JOIN TEAM T ON M.TEAM_ID = T.ID
+
+사용자 정의 함수도 가능
+
+Named 쿼리
+@NamedQuery(
+    name = "Member.findByUsername",
+        query = "select m from Member m where m.username = :username"
+)
+<아주 막강한 기능>
+<로딩시점에서 쿼리문을 파싱하기 때문에 오류를 바로 잡을 수 있음>
+<안쓰면 컴파일 타임에 버그를 잡을 수 없음>
+
+XML에 정의하는 방법도 있으나 잘 쓰이지는 않음
+
