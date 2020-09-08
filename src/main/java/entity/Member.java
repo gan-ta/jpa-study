@@ -16,8 +16,8 @@ public class Member {
 //    @Column(name = "TEAM_ID")
 //    private Long teamId;
 
-    @ManyToOne
-//    @ManyToOne(fetch = FetchType.LAZY) // 조회해도 멤버정보만 조회 //이 방법을 추천(원하는 것을 최적화해서 가져오자) //속단해서 최적화 하지 말자
+//    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // 조회해도 멤버정보만 조회 //이 방법을 추천(원하는 것을 최적화해서 가져오자) //속단해서 최적화 하지 말자
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 

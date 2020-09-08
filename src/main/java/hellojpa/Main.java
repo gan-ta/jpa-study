@@ -33,14 +33,30 @@ public class Main {
             //null이 들어가는 경우
             team.getMembers().add(member);
             //권장되는 사항은 두 군데 다 넣어버리는 것이 권장사항
-            member.setTeam(team);
+//            member.setTeam(team);
 
             em.flush();//쿼리 보냄
             em.clear();//캐시 비움
 
+            Member findMember = em.find(Member.class,member.getId());
+
+            //지연로딩시 영속성채context관리하지 않으면 프록시객체가 진짜 객체로 바꿔지지 않음
+            //(LazyInitializeException)
+            em.close();
+            Team findTeam = findMember.getTeam();
+            findTeam.getName();
+            System.out.println("findTeam = "+ findTeam);
+
+            //영속성 관리 안하겠다
+//            em.detach(findMember);
+
+            //영속성 컨텍스트를 완전히 초기화(1차 캐시를 비워줌)
+            //이전 데이터가 들어가는 이유는 flush를 해서 쿼리문을 일단 db로 보내 주웠기 때문
+//            em.clear();
+
+//            findMember.setName("member2");
+
             tx.commit();
-
-
         }catch (Exception e){
             tx.rollback();
         }finally {
