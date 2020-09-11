@@ -10,11 +10,9 @@
             <property name = "javax.persistence.jdbc.password" value=""/>
             <property name = "javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/test"/>
             <property name = "hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
-<<<<<<< HEAD
-=======
+
 <!--            <property name = "hibernate.dialect" value="org.hibernate.dialect.Oracle12cDialect"/>-->
 
->>>>>>> feature/7
 
 
             <!--옵션-->
@@ -23,11 +21,8 @@
             <property name="hibernate.use_sql_comments" value="true"/>
             <property name="hibernate.id.new_generator_mappings" value="true"/>
 
-<<<<<<< HEAD
-<!--            <property name="hibernate.hbmddl.auto" value="create"/>-->
-=======
+
             <property name="hibernate.hbm2ddl.auto" value="create"/>
->>>>>>> feature/7
         </properties>
 
 
